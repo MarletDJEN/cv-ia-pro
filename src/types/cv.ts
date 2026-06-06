@@ -35,7 +35,7 @@ export interface Language {
   level: 'Débutant' | 'Intermédiaire' | 'Courant' | 'Natif'
 }
 
-export type TemplateStyle = 'classic' | 'modern' | 'professional' | 'minimalist' | 'creative' | 'ats-friendly'
+export type TemplateStyle = 'classic' | 'modern' | 'professional' | 'minimalist' | 'creative' | 'ats-friendly' | 'motion-gradient' | 'motion-slide' | 'motion-cards'
 export type FontSize = 'small' | 'medium' | 'large'
 
 export interface CVData {
@@ -58,4 +58,7 @@ export const templateLabels: Record<TemplateStyle, string> = {
   minimalist: 'Minimaliste',
   creative: 'Créatif',
   'ats-friendly': 'ATS Friendly',
+  'motion-gradient': 'Motion Gradient',
+  'motion-slide': 'Motion Slide',
+  'motion-cards': 'Motion Cards',
 }

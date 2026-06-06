@@ -9,6 +9,9 @@ const templates: { id: TemplateStyle; desc: string }[] = [
   { id: 'minimalist', desc: 'Simple et épuré' },
   { id: 'creative', desc: 'Original et coloré' },
   { id: 'ats-friendly', desc: 'Optimisé ATS' },
+  { id: 'motion-gradient', desc: 'Fond animé avec dégradé' },
+  { id: 'motion-slide', desc: 'Contenu animé au défilement' },
+  { id: 'motion-cards', desc: 'Cartes avec effet 3D hover' },
 ]
 
 export default function TemplateSelector() {
@@ -45,10 +48,13 @@ export default function TemplateSelector() {
                 t.id === 'professional' ? 'bg-gray-900 border border-gray-700' :
                 t.id === 'minimalist' ? 'bg-white border border-gray-200' :
                 t.id === 'creative' ? 'bg-gradient-to-br from-purple-100 to-pink-100 border border-purple-200' :
+                t.id === 'motion-gradient' ? 'bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 border border-purple-300' :
+                t.id === 'motion-slide' ? 'bg-gradient-to-b from-blue-100 via-white to-blue-50 border border-blue-200' :
+                t.id === 'motion-cards' ? 'bg-gradient-to-br from-indigo-100 to-purple-100 border border-indigo-200' :
                 'bg-green-50 border border-green-200'
               }`}>
                 <div className="p-2 space-y-1">
-                  <div className={`h-1.5 rounded w-1/2 ${t.id === 'classic' ? 'bg-gray-400' : t.id === 'modern' ? 'bg-blue-500' : t.id === 'professional' ? 'bg-gray-600' : t.id === 'minimalist' ? 'bg-gray-300' : t.id === 'creative' ? 'bg-purple-500' : 'bg-green-500'}`} />
+                  <div className={`h-1.5 rounded w-1/2 ${t.id === 'classic' ? 'bg-gray-400' : t.id === 'modern' ? 'bg-blue-500' : t.id === 'professional' ? 'bg-gray-600' : t.id === 'minimalist' ? 'bg-gray-300' : t.id === 'creative' ? 'bg-purple-500' : t.id === 'motion-gradient' ? 'bg-white' : t.id === 'motion-slide' ? 'bg-blue-500' : t.id === 'motion-cards' ? 'bg-indigo-500' : 'bg-green-500'}`} />
                   <div className="h-1 rounded bg-gray-200 w-3/4" />
                   <div className="h-1 rounded bg-gray-200 w-1/2" />
                 </div>

@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { useCVStore } from '../store/cvStore'
 import type { FontSize } from '../types/cv'
 
@@ -17,6 +18,9 @@ export default function CVPreview() {
     minimalist: <MinimalistTemplate />,
     creative: <CreativeTemplate />,
     'ats-friendly': <ATSFriendlyTemplate />,
+    'motion-gradient': <MotionGradientTemplate />,
+    'motion-slide': <MotionSlideTemplate />,
+    'motion-cards': <MotionCardsTemplate />,
   }
 
   return (
@@ -594,6 +598,371 @@ function Section({ title, children, visible }: { title: string; children: React.
       <h2 className="text-[10pt] font-bold tracking-[1px] uppercase mb-2" style={{ color: 'inherit' }}>{title}</h2>
       {children}
     </div>
+  )
+}
+
+function MotionGradientTemplate() {
+  const cv = useCVStore((s) => s.cv)
+  const { personalInfo: p, experiences: exps, education: edus, skills, languages, sections, color } = cv
+
+  return (
+    <div className="bg-white min-h-[297mm] relative overflow-hidden" style={{ fontFamily: '"Segoe UI", system-ui, sans-serif' }}>
+      <motion.div
+        className="absolute inset-0 opacity-10"
+        style={{ background: `linear-gradient(135deg, ${color} 0%, #a855f7 50%, #f97316 100%)` }}
+        animate={{ backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'] }}
+        transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+      />
+      <motion.div
+        className="absolute w-[300px] h-[300px] rounded-full blur-3xl opacity-15"
+        style={{ background: color }}
+        animate={{ x: [0, 100, 50, 0], y: [0, 50, 100, 0] }}
+        transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      <motion.div
+        className="absolute w-[200px] h-[200px] rounded-full blur-3xl opacity-10"
+        style={{ background: '#a855f7', right: 0, bottom: 0 }}
+        animate={{ x: [0, -50, -100, 0], y: [0, -100, -50, 0] }}
+        transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+      />
+
+      <div className="relative px-[18mm] py-[14mm]">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center mb-8">
+          <h1 className="text-[24pt] font-bold" style={{ color }}>{p.firstName} {p.lastName}</h1>
+          {p.title && <p className="text-[10pt] text-gray-500 mt-1">{p.title}</p>}
+          <div className="flex justify-center gap-4 mt-3 text-[8pt] text-gray-400">
+            {p.email && <span>{p.email}</span>}
+            {p.phone && <span>{p.phone}</span>}
+            {p.address && <span>{p.address}</span>}
+          </div>
+        </motion.div>
+
+        <div className="grid grid-cols-[1fr_2fr] gap-6">
+          <div className="space-y-5">
+            <MotionBlock>
+              <h2 className="text-[8pt] font-bold uppercase tracking-[2px]" style={{ color }}>Profil</h2>
+              {sections.includes('summary') && <p className="text-[9pt] text-gray-600 mt-1 leading-[1.6]">{p.summary}</p>}
+            </MotionBlock>
+            <MotionBlock>
+              <h2 className="text-[8pt] font-bold uppercase tracking-[2px]" style={{ color }}>Compétences</h2>
+              <div className="mt-2 space-y-2">
+                {skills.map((s, i) => (
+                  <motion.div key={i} initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ delay: 0.5 + i * 0.1, duration: 0.8 }}>
+                    <div className="flex justify-between text-[8.5pt] mb-0.5"><span>{s}</span></div>
+                    <div className="h-[4px] bg-gray-100 rounded-full overflow-hidden">
+                      <motion.div className="h-full rounded-full" style={{ backgroundColor: color }} initial={{ width: 0 }} animate={{ width: `${70 + Math.random() * 25}%` }} transition={{ delay: 0.8 + i * 0.1, duration: 1 }} />
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </MotionBlock>
+            <MotionBlock>
+              <h2 className="text-[8pt] font-bold uppercase tracking-[2px]" style={{ color }}>Langues</h2>
+              <div className="mt-2 space-y-1.5">
+                {languages.map((l) => (
+                  <div key={l.id} className="flex justify-between text-[9pt]"><span>{l.name}</span><span className="text-gray-400">{l.level}</span></div>
+                ))}
+              </div>
+            </MotionBlock>
+          </div>
+
+          <div className="space-y-5">
+            <MotionBlock>
+              <h2 className="text-[8pt] font-bold uppercase tracking-[2px]" style={{ color }}>Expériences</h2>
+              <div className="mt-2 space-y-3">
+                {exps.map((exp, i) => (
+                  <motion.div key={exp.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.15 }}>
+                    <div className="flex justify-between items-baseline">
+                      <h3 className="text-[10pt] font-bold text-gray-800">{exp.position}</h3>
+                      <span className="text-[7.5pt] text-gray-400">{dateFormat(exp.startDate)} — {exp.current ? 'Présent' : dateFormat(exp.endDate)}</span>
+                    </div>
+                    <p className="text-[8.5pt]" style={{ color: `${color}e0` }}>{exp.company}</p>
+                    <p className="text-[8.5pt] text-gray-600 mt-0.5">{exp.description}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </MotionBlock>
+            <MotionBlock>
+              <h2 className="text-[8pt] font-bold uppercase tracking-[2px]" style={{ color }}>Formation</h2>
+              <div className="mt-2 space-y-2">
+                {edus.map((edu, i) => (
+                  <motion.div key={edu.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + i * 0.1 }}>
+                    <div className="flex justify-between items-baseline"><h3 className="text-[10pt] font-bold text-gray-800">{edu.degree}</h3><span className="text-[7.5pt] text-gray-400">{dateFormat(edu.startDate)} — {dateFormat(edu.endDate)}</span></div>
+                    <p className="text-[8.5pt] text-gray-500">{edu.institution} — {edu.field}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </MotionBlock>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function MotionSlideTemplate() {
+  const cv = useCVStore((s) => s.cv)
+  const { personalInfo: p, experiences: exps, education: edus, skills, languages, interests, sections, color } = cv
+
+  return (
+    <div className="bg-white min-h-[297mm]" style={{ fontFamily: '"Inter", system-ui, sans-serif' }}>
+      <motion.div
+        initial={{ height: 0 }}
+        animate={{ height: 'auto' }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="overflow-hidden"
+        style={{ backgroundColor: color }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="px-[18mm] py-[12mm] text-white"
+        >
+          <h1 className="text-[22pt] font-bold">{p.firstName} {p.lastName}</h1>
+          {p.title && <p className="text-[9pt] opacity-80 mt-1">{p.title}</p>}
+          <div className="flex gap-4 mt-2 text-[8pt] opacity-70">
+            {p.email && <span>{p.email}</span>}
+            {p.phone && <span>{p.phone}</span>}
+            {p.address && <span>{p.address}</span>}
+          </div>
+        </motion.div>
+      </motion.div>
+
+      <div className="px-[18mm] py-[10mm] space-y-5">
+        {sections.includes('summary') && p.summary && (
+          <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6, duration: 0.5 }}>
+            <p className="text-[9.5pt] text-gray-600 leading-[1.7] italic border-l-[3px] pl-3" style={{ borderColor: color }}>{p.summary}</p>
+          </motion.div>
+        )}
+
+        {sections.includes('experiences') && exps.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8, duration: 0.5 }}>
+            <h2 className="text-[9pt] font-bold uppercase tracking-[2px] mb-3" style={{ color }}>Expériences</h2>
+            <div className="space-y-3">
+              {exps.map((exp) => (
+                <motion.div
+                  key={exp.id}
+                  initial={{ opacity: 0, x: 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2, duration: 0.4 }}
+                  className="relative pl-4 border-l-2"
+                  style={{ borderColor: color }}
+                >
+                  <motion.div
+                    className="absolute -left-[5px] top-1 w-[8px] h-[8px] rounded-full"
+                    style={{ backgroundColor: color }}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.4, type: 'spring' }}
+                  />
+                  <div className="flex justify-between items-baseline">
+                    <h3 className="text-[10pt] font-bold text-gray-800">{exp.position}</h3>
+                    <span className="text-[7.5pt] text-gray-400">{dateFormat(exp.startDate)} — {exp.current ? 'Présent' : dateFormat(exp.endDate)}</span>
+                  </div>
+                  <p className="text-[8.5pt] text-gray-500">{exp.company}</p>
+                  <p className="text-[8.5pt] text-gray-600 mt-0.5">{exp.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {sections.includes('education') && edus.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1, duration: 0.5 }}>
+            <h2 className="text-[9pt] font-bold uppercase tracking-[2px] mb-3" style={{ color }}>Formation</h2>
+            <div className="space-y-2">
+              {edus.map((edu) => (
+                <motion.div key={edu.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="flex justify-between items-baseline">
+                  <div><span className="text-[10pt] font-bold text-gray-800">{edu.degree}</span><span className="text-[8.5pt] text-gray-500"> — {edu.institution}</span></div>
+                  <span className="text-[7.5pt] text-gray-400">{dateFormat(edu.startDate)} — {dateFormat(edu.endDate)}</span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        <div className="grid grid-cols-3 gap-4">
+          {sections.includes('skills') && skills.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.5 }}>
+              <h2 className="text-[9pt] font-bold uppercase tracking-[2px] mb-2" style={{ color }}>Compétences</h2>
+              <div className="flex flex-wrap gap-1">
+                {skills.map((s, i) => (
+                  <motion.span key={i} initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.4 + i * 0.05, type: 'spring' }} className="text-[8pt] px-2 py-0.5 rounded" style={{ backgroundColor: `${color}15`, color }}>{s}</motion.span>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {sections.includes('languages') && languages.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4, duration: 0.5 }}>
+              <h2 className="text-[9pt] font-bold uppercase tracking-[2px] mb-2" style={{ color }}>Langues</h2>
+              <div className="space-y-1">
+                {languages.map((l) => (
+                  <div key={l.id} className="flex justify-between text-[9pt]"><span>{l.name}</span><span className="text-gray-400 text-[8pt]">{l.level}</span></div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {sections.includes('interests') && interests.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.6, duration: 0.5 }}>
+              <h2 className="text-[9pt] font-bold uppercase tracking-[2px] mb-2" style={{ color }}>Centres d'intérêt</h2>
+              <div className="space-y-1">
+                {interests.map((i, idx) => (
+                  <p key={idx} className="text-[9pt] text-gray-600">{i}</p>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function MotionCardsTemplate() {
+  const cv = useCVStore((s) => s.cv)
+  const { personalInfo: p, experiences: exps, education: edus, skills, languages, interests, sections, color } = cv
+
+  return (
+    <div className="bg-gradient-to-br from-gray-50 to-white min-h-[297mm] p-[10mm]" style={{ fontFamily: '"Poppins", system-ui, sans-serif' }}>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-center mb-6"
+      >
+        <h1 className="text-[22pt] font-black" style={{ color }}>{p.firstName} <span className="text-gray-800">{p.lastName}</span></h1>
+        {p.title && <p className="text-[9pt] text-gray-500 mt-1">{p.title}</p>}
+        <motion.div className="flex justify-center gap-4 mt-2 text-[8pt] text-gray-400" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+          {p.email && <span>{p.email}</span>}
+          {p.phone && <span>{p.phone}</span>}
+          {p.address && <span>{p.address}</span>}
+        </motion.div>
+      </motion.div>
+
+      <div className="grid grid-cols-3 gap-3">
+        {sections.includes('summary') && p.summary && (
+          <motion.div
+            className="col-span-3 bg-white rounded-xl p-4 shadow-sm border border-gray-100"
+            initial={{ opacity: 0, rotateX: -5, y: 20 }}
+            animate={{ opacity: 1, rotateX: 0, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            whileHover={{ y: -2, boxShadow: '0 10px 30px rgba(0,0,0,0.08)' }}
+          >
+            <p className="text-[9pt] text-gray-600 leading-[1.6]">{p.summary}</p>
+          </motion.div>
+        )}
+
+        {sections.includes('experiences') && exps.length > 0 && (
+          <motion.div
+            className="col-span-2 bg-white rounded-xl p-4 shadow-sm border border-gray-100"
+            initial={{ opacity: 0, x: -20, y: 20 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+            whileHover={{ y: -2, boxShadow: '0 10px 30px rgba(0,0,0,0.08)' }}
+          >
+            <h2 className="text-[9pt] font-bold uppercase tracking-[2px] mb-3" style={{ color }}>Expériences</h2>
+            <div className="space-y-3">
+              {exps.map((exp) => (
+                <div key={exp.id}>
+                  <div className="flex justify-between items-baseline">
+                    <h3 className="text-[10pt] font-bold text-gray-800">{exp.position}</h3>
+                    <span className="text-[7.5pt] text-gray-400">{dateFormat(exp.startDate)} — {exp.current ? 'Présent' : dateFormat(exp.endDate)}</span>
+                  </div>
+                  <p className="text-[8.5pt] text-gray-500">{exp.company}</p>
+                  <p className="text-[8.5pt] text-gray-600 mt-0.5">{exp.description}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        <div className="space-y-3">
+          {sections.includes('skills') && skills.length > 0 && (
+            <motion.div
+              className="bg-white rounded-xl p-4 shadow-sm border border-gray-100"
+              initial={{ opacity: 0, x: 20, y: 20 }}
+              animate={{ opacity: 1, x: 0, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              whileHover={{ y: -2, boxShadow: '0 10px 30px rgba(0,0,0,0.08)' }}
+            >
+              <h2 className="text-[9pt] font-bold uppercase tracking-[2px] mb-2" style={{ color }}>Compétences</h2>
+              <div className="space-y-1.5">
+                {skills.map((s, i) => (
+                  <motion.div key={i} whileHover={{ x: 3 }} className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
+                    <span className="text-[8.5pt] text-gray-600">{s}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {sections.includes('languages') && languages.length > 0 && (
+            <motion.div
+              className="bg-white rounded-xl p-4 shadow-sm border border-gray-100"
+              initial={{ opacity: 0, x: 20, y: 20 }}
+              animate={{ opacity: 1, x: 0, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+              whileHover={{ y: -2, boxShadow: '0 10px 30px rgba(0,0,0,0.08)' }}
+            >
+              <h2 className="text-[9pt] font-bold uppercase tracking-[2px] mb-2" style={{ color }}>Langues</h2>
+              <div className="space-y-1">
+                {languages.map((l) => (
+                  <div key={l.id} className="flex justify-between text-[9pt]"><span className="text-gray-700">{l.name}</span><span className="text-gray-400 text-[8pt]">{l.level}</span></div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {sections.includes('education') && edus.length > 0 && (
+            <motion.div
+              className="bg-white rounded-xl p-4 shadow-sm border border-gray-100"
+              initial={{ opacity: 0, x: 20, y: 20 }}
+              animate={{ opacity: 1, x: 0, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.5 }}
+              whileHover={{ y: -2, boxShadow: '0 10px 30px rgba(0,0,0,0.08)' }}
+            >
+              <h2 className="text-[9pt] font-bold uppercase tracking-[2px] mb-2" style={{ color }}>Formation</h2>
+              {edus.map((edu) => (
+                <div key={edu.id} className="mb-2"><div className="text-[9.5pt] font-semibold text-gray-800">{edu.degree}</div><div className="text-[8pt] text-gray-500">{edu.institution}</div><div className="text-[7.5pt] text-gray-400">{dateFormat(edu.startDate)} — {dateFormat(edu.endDate)}</div></div>
+              ))}
+            </motion.div>
+          )}
+        </div>
+      </div>
+
+      {sections.includes('interests') && interests.length > 0 && (
+        <motion.div
+          className="mt-3 bg-white rounded-xl p-4 shadow-sm border border-gray-100"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+          whileHover={{ y: -2, boxShadow: '0 10px 30px rgba(0,0,0,0.08)' }}
+        >
+          <h2 className="text-[9pt] font-bold uppercase tracking-[2px] mb-2" style={{ color }}>Centres d'intérêt</h2>
+          <div className="flex flex-wrap gap-2">
+            {interests.map((i, idx) => (
+              <motion.span key={idx} whileHover={{ scale: 1.05 }} className="text-[8.5pt] px-3 py-1 rounded-full text-white" style={{ backgroundColor: color }}>{i}</motion.span>
+            ))}
+          </div>
+        </motion.div>
+      )}
+    </div>
+  )
+}
+
+function MotionBlock({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.5 }}
+    >
+      {children}
+    </motion.div>
   )
 }
 
