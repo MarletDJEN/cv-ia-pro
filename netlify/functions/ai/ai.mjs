@@ -4,7 +4,7 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || '',
 })
 
-export const handler = async (event: { body?: string }) => {
+export const handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -22,7 +22,7 @@ export const handler = async (event: { body?: string }) => {
       return { statusCode: 400, headers, body: JSON.stringify({ error: 'Prompt requis' }) }
     }
 
-    const messages: { role: string; content: string }[] = [
+    const messages = [
       { role: 'system', content: "Tu es un assistant expert en rédaction de CV. Tu réponds uniquement en français. Tu fournis des réponses concises et professionnelles." },
       { role: 'user', content: prompt },
     ]
